@@ -7,7 +7,6 @@ import {
   CardContent,
   Container,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
@@ -18,6 +17,7 @@ import {
 } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
 import { useQuery, useMutation, gql } from "@apollo/client";
+import Grid from "@mui/material/Grid2";
 
 import { palette, styled, ThemeProvider } from "@mui/system";
 import theme from "../theme/theme.d";
@@ -230,7 +230,7 @@ const UserProfile = () => {
           <StyledCard>
             <CardContent>
               <Grid container spacing={4}>
-                <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
+                <Grid size={{ xs: 12, md: 4 }} sx={{ textAlign: "center" }}>
                   <ProfileImage alt="Fotografia de Profil" src="" />
                   <Typography variant="h5" sx={{ mt: 2 }}>
                     {formData.firstName} {formData.lastName}
@@ -240,7 +240,7 @@ const UserProfile = () => {
                   </Typography>
                 </Grid>
 
-                <Grid item xs={12} md={8}>
+                <Grid size={{ xs: 12, md: 8 }}>
                   <Typography variant="h6" gutterBottom>
                     Preferințe
                   </Typography>
@@ -278,7 +278,7 @@ const UserProfile = () => {
               </Typography>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 8 }}>
                     <TextField
                       fullWidth
                       label="First Name"
@@ -288,7 +288,7 @@ const UserProfile = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 8 }}>
                     <TextField
                       fullWidth
                       label="Last Name"
@@ -298,7 +298,7 @@ const UserProfile = () => {
                       required
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <FormControl fullWidth>
                       <InputLabel>Stilul de viațǎ</InputLabel>
                       <Select
@@ -316,7 +316,7 @@ const UserProfile = () => {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <Button
                       type="submit"
                       variant="contained"

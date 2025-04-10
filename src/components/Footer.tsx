@@ -7,27 +7,49 @@ const Footer = () => {
     <Box
       sx={{
         width: "100%",
-        backgroundColor: theme.palette.primary.main,
+        background: theme.palette.primary.main,
         color: "white",
-        py: 3,
+        py: 4,
         display: "flex",
         flexDirection: "column",
+        position: "static",
+
         alignItems: "center",
         justifyContent: "center",
         mt: "auto",
-        position: "absolute",
+        boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
         bottom: "auto",
-        marginTop: 3,
+        marginTop: "auto",
       }}
     >
-      <Typography variant="body2" sx={{ mb: 1 }}>
+      <Typography variant="body2" sx={{ mb: 1, fontWeight: "medium" }}>
         &copy; {new Date().getFullYear()} eCamin. All rights reserved.
       </Typography>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Link href="/terms" color="inherit" underline="hover">
+      <Box sx={{ display: "flex", gap: 3 }}>
+        <Link
+          href="/terms"
+          color="inherit"
+          underline="hover"
+          sx={{
+            transition: "color 0.3s ease",
+            "&:hover": {
+              color: theme.palette.secondary.light,
+            },
+          }}
+        >
           Terms of Service
         </Link>
-        <Link href="/privacy" color="inherit" underline="hover">
+        <Link
+          href="/privacy"
+          color="inherit"
+          underline="hover"
+          sx={{
+            transition: "color 0.3s ease",
+            "&:hover": {
+              color: theme.palette.secondary.light,
+            },
+          }}
+        >
           Privacy Policy
         </Link>
       </Box>

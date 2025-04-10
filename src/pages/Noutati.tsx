@@ -1,35 +1,21 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import {
   CircularProgress,
   Typography,
   Box,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  ThemeProvider,
-  CssBaseline,
-  Grid,
-  Pagination,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  ThemeProvider,
+  Button,
+  Pagination,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import React, { useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import theme from "../theme/theme.d";
-
-const ADD_NEWS = gql`
-  mutation Mutation($data: NewsCreateInput!) {
-    createOneNews(data: $data) {
-      id
-      description
-      title
-      date
-    }
-  }
-`;
+import BlogCard from "./BlogCard";
 
 const GET_ALL_NEWS = gql`
   query FindManyNews {
@@ -38,160 +24,157 @@ const GET_ALL_NEWS = gql`
       description
       date
       title
+      imageUrl
     }
   }
 `;
 
 export const NewsList: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(6);
   const { loading, error, data } = useQuery(GET_ALL_NEWS);
 
   const [selectedNews, setSelectedNews] = useState<any | null>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 2;
 
   const handleNewsClick = (news: any) => {
-    setSelectedNews(news); // Setează noutatea selectată
-    setOpenModal(true); // Deschide modalul
+    setSelectedNews(news);
+    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false); // Închide modalul
-    setSelectedNews(null); // Resetează noutatea selectată
+    setOpenModal(false);
+    setSelectedNews(null);
+  };
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
   };
 
   if (loading) return <CircularProgress color="primary" />;
   if (error)
     return <Typography color="error">Eroare la încărcarea știrilor</Typography>;
 
-  // Pagina curentă și datele pentru acea pagină
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const newsForCurrentPage = data?.findManyNews.slice(startIndex, endIndex);
-
-  // Calculăm numărul total de pagini
-  const totalPages = Math.ceil(data?.findManyNews.length / pageSize);
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setCurrentPage(value);
-  };
+  const paginatedNews = data?.findManyNews.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-
-      {/* Listă de noutăți cu paginare */}
-      <Typography
-        variant="h3"
-        color="primary"
-        sx={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "3rem",
-          letterSpacing: "0.5px",
-          textTransform: "uppercase",
-          mt: 2,
-          mb: 4,
-        }}
-      >
-        Noutăți
-      </Typography>
-
-      <Grid container spacing={3} sx={{ px: 2 }}>
-        {newsForCurrentPage?.map(
-          (news: {
-            id: string;
-            title: string;
-            description: string;
-            imageUrl: string;
-            date: Date;
-          }) => (
-            <Grid item xs={12} sm={6} md={4} key={news.id}>
-              <Card
-                sx={{
-                  maxWidth: 600,
-                  mx: "auto",
-                  height: "200px",
-                  mb: 3,
-                  borderRadius: "8px",
-                }}
-                onClick={() => handleNewsClick(news)}
-              >
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    {news.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {new Date(news.date).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body1">
-                    {news.description?.length > 100
-                      ? `${news.description.slice(0, 100)}...`
-                      : news.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          )
-        )}
-      </Grid>
-
-      {/* Paginare */}
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
-          bottom: 5,
-          position: "static",
-          mt: "auto",
-          width: "100%",
+          flexDirection: { xs: "column", md: "row" },
+          height: { xs: "93.5vh", sm: "92vh" },
         }}
       >
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-        />
-      </Box>
+        {/* Secțiunea statică din stânga */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "40%" },
+            height: { xs: "auto", md: "100%" },
+            background: theme.palette.background.paper,
+            color: theme.palette.primary.main,
+            textAlign: "center",
+            py: 4,
+            px: 2,
+            mb: { xs: 3, md: 0 },
+            alignContent: "center",
+          }}
+        >
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: "bold",
+              fontSize: { xs: "2rem", sm: "3rem" },
+              letterSpacing: "1px",
+            }}
+          >
+            Noutăți
+          </Typography>
+          <Typography variant="subtitle1" sx={{ mt: 1 }}>
+            Cele mai recente știri și actualizări
+          </Typography>
+        </Box>
 
-      {/* Modal pentru detaliile noutății selectate */}
-      <Dialog
-        open={openModal}
-        onClose={handleCloseModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>{selectedNews?.title}</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary">
-            {new Date(selectedNews?.date).toLocaleDateString()}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            {selectedNews?.description}
-          </Typography>
-          {selectedNews?.imageUrl && (
-            <Box
-              component="img"
-              src={selectedNews?.imageUrl}
-              alt={selectedNews?.title}
-              sx={{
-                width: "100%", // Imagini vor ocupa 100% din lățimea containerului
-                height: "auto",
-                mt: 2,
-              }}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
-            Închide
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {/* Listă de noutăți scrollabilă în dreapta */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "60%" },
+            height: "auto",
+            overflowY: "auto",
+            px: { xs: 2, sm: 4 },
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <Grid container spacing={2} direction={{ xs: "column" }}>
+            {paginatedNews?.map((news: any) => (
+              <Grid size={{ xs: 12 }} key={news.id}>
+                <BlogCard
+                  news={{
+                    ...news,
+                    date: new Date(news.date).toLocaleDateString(),
+                  }}
+                  onClick={() => handleNewsClick(news)}
+                />
+              </Grid>
+            ))}
+          </Grid>
+
+          <Pagination
+            count={Math.ceil(data?.findManyNews.length / itemsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{ mt: 3, display: "flex", justifyContent: "center" }}
+          />
+        </Box>
+
+        {/* Modal pentru detaliile noutății selectate */}
+        <Dialog
+          open={openModal}
+          onClose={handleCloseModal}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle
+            sx={{ fontWeight: "bold", color: theme.palette.primary.main }}
+          >
+            {selectedNews?.title}
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {new Date(selectedNews?.date).toLocaleDateString()}
+            </Typography>
+            {selectedNews?.imageUrl && (
+              <Box
+                component="img"
+                src={selectedNews?.imageUrl}
+                alt={selectedNews?.title}
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "8px",
+                  mb: 2,
+                }}
+              />
+            )}
+            <Typography variant="body1">{selectedNews?.description}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseModal} color="primary">
+              Închide
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </ThemeProvider>
   );
 };

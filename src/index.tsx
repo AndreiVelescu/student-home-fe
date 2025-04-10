@@ -3,20 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  gql,
-  makeVar,
-  createHttpLink,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { ThemeProvider } from "styled-components";
 import theme from "./theme/theme.d";
 import { CssBaseline } from "@mui/material";
 import { setContext } from "@apollo/client/link/context";
 import { ACCESS_TOKEN_KEY } from "./Context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
 export type User = {
   lastName: string;
@@ -58,7 +52,7 @@ const isTokenExpired = (token: string): boolean => {
   }
 };
 
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
   uri: "http://localhost:8080/graphql",
 });
 
