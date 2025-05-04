@@ -33,7 +33,7 @@ interface UploadFileComponentProps extends UseControllerProps {
   onRemove?: (index: number) => void;
 }
 
-// Aplica tema personalizat
+
 const minimalTheme = createTheme({
   palette: {
     primary: {
@@ -42,7 +42,7 @@ const minimalTheme = createTheme({
   },
 });
 
-// Adăugăm forwardRef pentru a permite referințele
+
 export const UploadFileComponent = React.forwardRef<
   HTMLInputElement,
   UploadFileComponentProps

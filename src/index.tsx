@@ -11,6 +11,7 @@ import { setContext } from "@apollo/client/link/context";
 import { ACCESS_TOKEN_KEY } from "./Context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { ProfileImageProvider } from "./Context/ProfileImageContext";
 
 export type User = {
   lastName: string;
@@ -70,6 +71,7 @@ root.render(
   <ApolloProvider client={client}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
+
       <App />
     </ThemeProvider>
   </ApolloProvider>

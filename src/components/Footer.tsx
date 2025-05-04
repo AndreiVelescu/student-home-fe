@@ -12,14 +12,12 @@ const Footer = () => {
         py: 4,
         display: "flex",
         flexDirection: "column",
-        position: "static",
 
         alignItems: "center",
         justifyContent: "center",
-        mt: "auto",
+
         boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
         bottom: "auto",
-        marginTop: "auto",
       }}
     >
       <Typography variant="body2" sx={{ mb: 1, fontWeight: "medium" }}>

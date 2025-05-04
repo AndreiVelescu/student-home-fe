@@ -16,6 +16,17 @@ import { useAuth } from "../Context/AuthContext";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../theme/theme.d";
 import NotificationButton from "./Notification";
+import { Avatar } from "@mui/material";
+import { gql, useQuery } from "@apollo/client";
+import { useProfileImage } from "../Context/ProfileImageContext";
+
+const GET_AVATAR_URL = gql`
+  query GetUser($where: UserWhereUniqueInput!) {
+    getUser(where: $where) {
+      profilePictureurl
+    }
+  }
+`;
 
 const pages = ["Camine", "News"];
 
@@ -27,9 +38,19 @@ function Header() {
     null
   );
 
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const { profileImageUrl, setProfileImageUrl } = useProfileImage();
 
+  const avatarUrl = useQuery(GET_AVATAR_URL, {
+    variables: {
+      where: {
+        id: currentUser()?.id,
+      },
+    },
+  });
+
+  const fullAvatarUrl = `http://localhost:8080${profileImageUrl}`;
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -57,15 +78,15 @@ function Header() {
       <AppBar
         position="relative"
         sx={{
-          backgroundColor: "white", // Fundal alb
-          color: theme.palette.primary.main, // Culoare de text închisă pentru contrast
-          boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)", // Umbră subtilă
+          backgroundColor: "white",
+          color: theme.palette.primary.main,
+          boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)",
           borderRadius: "10px",
         }}
       >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Logo for desktop */}
+            {/* logo for desktop */}
             <Typography
               variant="h6"
               noWrap
@@ -75,7 +96,7 @@ function Header() {
                 display: { xs: "none", md: "flex" },
                 fontFamily: "monospace",
                 fontWeight: 700,
-                color: theme.palette.primary.main, // Culoare de text închisă
+                color: theme.palette.primary.main,
                 textDecoration: "none",
                 fontSize: "1.5rem",
                 mr: 2,
@@ -87,7 +108,7 @@ function Header() {
               eCamin
             </Typography>
 
-            {/* Mobile Menu Icon - Visible only for authenticated users */}
+            {/* Mobile Menu Icon*/}
             {isAuthenticated && (
               <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                 <IconButton
@@ -95,7 +116,7 @@ function Header() {
                   aria-label="menu"
                   onClick={handleOpenNavMenu}
                   color="inherit"
-                  sx={{ color: theme.palette.primary.main }} // Culoare de text închisă
+                  sx={{ color: theme.palette.primary.main }}
                 >
                   <MenuIcon />
                 </IconButton>
@@ -134,7 +155,7 @@ function Header() {
                 flexGrow: 1,
                 fontFamily: "monospace",
                 fontWeight: 700,
-                color: theme.palette.primary.main, // Culoare de text închisă
+                color: theme.palette.primary.main,
                 textDecoration: "none",
                 fontSize: "1.2rem",
                 "&:hover": {
@@ -145,7 +166,7 @@ function Header() {
               eCamin
             </Typography>
 
-            {/* Desktop menu - Visible only for authenticated users */}
+            {/* Desktop menu */}
             {isAuthenticated && (
               <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                 {pages.map((page) => (
@@ -154,12 +175,12 @@ function Header() {
                     onClick={() => handleNavigateToPage(page)}
                     sx={{
                       my: 2,
-                      color: "text.primary", // Culoare de text închisă
+                      color: "text.primary",
                       display: "block",
                       fontSize: "1rem",
                       mx: 1,
                       "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.05)", // Efect de hover subtil
+                        backgroundColor: "rgba(0, 0, 0, 0.05)",
                       },
                     }}
                   >
@@ -182,12 +203,12 @@ function Header() {
               {isAuthenticated ? (
                 <Tooltip title="Account options">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <AccountCircleIcon
-                      fontSize="large"
+                    <Avatar
+                      src={fullAvatarUrl}
                       sx={{
                         color: "text.primary",
                         "&:hover": { opacity: 0.8 },
-                      }} // Culoare de text închisă
+                      }}
                     />
                   </IconButton>
                 </Tooltip>
@@ -199,10 +220,10 @@ function Header() {
                     }}
                     sx={{
                       borderRadius: "16px",
-                      color: "text.primary", // Culoare de text închisă
-                      borderColor: "text.primary", // Culoare de bordură închisă
+                      color: "text.primary",
+                      borderColor: "text.primary",
                       "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.05)", // Efect de hover subtil
+                        backgroundColor: "rgba(0, 0, 0, 0.05)",
                       },
                     }}
                     variant="outlined"
@@ -215,10 +236,10 @@ function Header() {
                     }}
                     sx={{
                       borderRadius: "16px",
-                      color: "text.primary", // Culoare de text închisă
-                      borderColor: "text.primary", // Culoare de bordură închisă
+                      color: "text.primary",
+                      borderColor: "text.primary",
                       "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.05)", // Efect de hover subtil
+                        backgroundColor: "rgba(0, 0, 0, 0.05)",
                       },
                     }}
                     variant="outlined"
@@ -228,26 +249,28 @@ function Header() {
                 </Box>
               )}
               {isAuthenticated && (
-                <Menu
-                  sx={{ mt: "45px" }}
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                  keepMounted
-                  transformOrigin={{ vertical: "top", horizontal: "right" }}
-                  open={Boolean(anchorElUser)}
-                  onClose={() => setAnchorElUser(null)}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      setAnchorElUser(null);
-                      navigate("/profile");
-                    }}
+                <Box>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    keepMounted
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    open={Boolean(anchorElUser)}
+                    onClose={() => setAnchorElUser(null)}
                   >
-                    Profil
-                  </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setAnchorElUser(null);
+                        navigate("/profile");
+                      }}
+                    >
+                      Profil
+                    </MenuItem>
 
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </Menu>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </Menu>
+                </Box>
               )}
               {isAuthenticated && <NotificationButton />}
             </Box>

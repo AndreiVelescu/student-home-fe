@@ -14,11 +14,11 @@ import {
   Stack,
 } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
-import MarkChatReadIcon from "@mui/icons-material/MarkChatRead";
+
 import CheckIcon from "@mui/icons-material/Check";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useAuth } from "../Context/AuthContext";
-import theme from "../theme/theme.d"; // Importă tema personalizată
+import theme from "../theme/theme.d";
 import MessageContainer from "./MessageContainer";
 
 const GET_NOTIFICATIONS = gql`

@@ -5,7 +5,7 @@ const theme = createTheme({
     mode: "light",
     primary: {
       light: "#6ddfd8", // Turcoaz deschis
-      main: "rgba(38, 166, 153, 0.68)", // Turcoaz principal (o nuanță modernă și calmă)
+      main: "#26a699", // Turcoaz principal (o nuanță modernă și calmă)
       dark: "#00766c", // Turcoaz închis
       contrastText: "#ffffff", // Text alb pentru contrast
     },

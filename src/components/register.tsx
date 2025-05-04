@@ -7,6 +7,8 @@ import {
   Typography,
   Snackbar,
   CssBaseline,
+  Grid,
+  Grid2,
 } from "@mui/material";
 import { styled, ThemeProvider } from "@mui/material/styles";
 import { useMutation, gql } from "@apollo/client";
@@ -15,6 +17,8 @@ import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 import theme from "../theme/theme.d";
 import RegisterSvg from "../assets/RegisterSvg.svg";
+import PhoneInput from "react-phone-input-2";
+import { set } from "react-hook-form";
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
   height: "100vh",
@@ -63,12 +67,16 @@ const CREATE_ONE_USER = gql`
     $password: String!
     $lastName: String!
     $firstName: String!
+    $university: String!
+    $phone: String!
   ) {
     signUp(
       email: $email
       password: $password
       lastName: $lastName
       firstName: $firstName
+      university: $university
+      phone: $phone
     ) {
       accessToken
       refreshToken
@@ -83,6 +91,9 @@ const AddUserForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [university, setUniversity] = useState("");
+
+  const [phone, setPhone] = useState("");
 
   const navigate = useNavigate();
 
@@ -96,6 +107,8 @@ const AddUserForm = () => {
       setEmail("");
       setPassword("");
       setError("");
+      setUniversity("");
+      setPhone("");
       setOpenSnackBar(true);
       navigate("/");
     },
@@ -104,7 +117,14 @@ const AddUserForm = () => {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !password) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !university ||
+      !phone
+    ) {
       setError("Toate câmpurile sunt obligatorii.");
       return;
     }
@@ -115,11 +135,13 @@ const AddUserForm = () => {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
     if (!passwordRegex.test(password)) {
       setError(
-        "Parola trebuie să conțină cel puțin 8 caractere, inclusiv litere și cifre."
+        "Parola trebuie să conțină cel puțin 8 caractere, inclusiv o literă mare, o literă mică și o cifră."
       );
+
       return;
     }
 
@@ -130,6 +152,8 @@ const AddUserForm = () => {
           password: password,
           lastName: lastName,
           firstName: firstName,
+          university: university,
+          phone: phone,
         },
       });
     } catch (err) {
@@ -182,7 +206,7 @@ const AddUserForm = () => {
           >
             Înregistrare
           </Typography>
-          <FormContainer component="form" onSubmit={handleAddUser} noValidate>
+          <FormContainer component="form" onSubmit={handleAddUser}>
             <TextField
               label="Prenume"
               value={firstName}
@@ -234,6 +258,60 @@ const AddUserForm = () => {
                 },
               }}
             />
+            <TextField
+              label="Universitatea"
+              value={university}
+              onChange={(e) => setUniversity(e.target.value)}
+              fullWidth
+              required
+              type="text"
+              variant="outlined"
+              sx={{
+                backgroundColor: "#fff",
+                "& .MuiInputBase-root": {
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+                  transition: "box-shadow 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 2px 12px rgba(0, 0, 0, 0.12)",
+                  },
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "text.secondary",
+                },
+              }}
+            />
+
+            <PhoneInput
+              disableDropdown
+              buttonStyle={{
+                cursor: "auto",
+              }}
+              value={phone}
+              showDropdown={false}
+              countryCodeEditable={false}
+              preferredCountries={["md"]}
+              country={"md"}
+              placeholder="+373 68791183"
+              inputStyle={{
+                borderColor: theme.palette.primary.main,
+                width: "100%",
+              }}
+              onChange={(value) => setPhone(value)}
+              specialLabel="Telefon"
+              inputProps={{
+                name: "phone",
+                required: true,
+              }}
+              containerStyle={{
+                width: "100%",
+                color: theme.palette.primary.main,
+                borderColor: theme.palette.primary.main,
+              }}
+            />
+
             <TextField
               label="Email"
               value={email}

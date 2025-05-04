@@ -16,6 +16,14 @@ const GET_CURRENT_USER = gql`
       lastName
       email
       FirstName
+      university
+      phone
+      preferences {
+        cleanliness
+        quietness
+        lifestyle
+      }
+
       id
     }
   }
@@ -35,6 +43,13 @@ export type User = {
   role: string;
   email: string;
   id: number;
+  phone: string;
+  university: string;
+  preferences: {
+    cleanliness: number;
+    quietness: number;
+    lifestyle: string;
+  };
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

@@ -22,7 +22,10 @@ import theme from "../theme/theme.d";
 
 import LoginSvg from "../assets/LoginSvg.svg";
 
-// Styled Components
+interface component {
+  component: string;
+}
+
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -64,8 +67,8 @@ const ImageContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  flex: 1, // Permite imaginii să ocupe restul spațiului disponibil
-  padding: "20px", // Poți ajusta paddingul după cum dorești
+  flex: 1,
+  padding: "20px",
 });
 
 const InputField = styled(TextField)(({ theme }) => ({
@@ -96,7 +99,6 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-// GraphQL Query
 const SIGN_IN = gql`
   query SignIn($email: String!, $password: String!) {
     SignIn(email: $email, password: $password) {
@@ -107,7 +109,6 @@ const SIGN_IN = gql`
 `;
 
 const LoginForm = () => {
-  // State Management
   const { login, loadCurrentUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,12 +123,11 @@ const LoginForm = () => {
       if (data.SignIn?.accessToken) {
         login(data.SignIn?.accessToken, data.SignIn?.refreshToken);
         await loadCurrentUser();
-        navigate("/home");
+        navigate("/");
       }
     },
   });
 
-  // Validation
   const validateInputs = () => {
     let isValid = true;
 

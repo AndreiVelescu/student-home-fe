@@ -9,7 +9,7 @@ import { NewsList } from "../pages/Noutati";
 import Layout from "../Layout";
 import ProtectedRoute from "./ProtectedRoute";
 import ErrorComponent from "../components/errorComponent";
-import EditProfileForm from "../pages/UserProfile";
+import UserProfile from "../pages/UserProfile";
 
 const AppRouter = () => {
   const router = createBrowserRouter([
@@ -28,7 +28,7 @@ const AppRouter = () => {
       errorElement: <ErrorComponent />,
       children: [
         { path: "/home", element: <HomePage /> },
-        { path: "/profile", element: <EditProfileForm /> },
+        { path: "/profile", element: <UserProfile /> },
         { path: "/camine", element: <Camine /> },
         { path: "/news", element: <NewsList /> },
       ],

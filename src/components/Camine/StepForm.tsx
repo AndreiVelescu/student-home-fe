@@ -30,6 +30,10 @@ import { SectionView } from "./SectionView";
 import { CheckBox } from "@mui/icons-material";
 import { FORM_MUTATION } from "./mutations";
 import { UPLOAD_MUTATION } from "./mutations";
+import { NOTIFICATION_MUTATION } from "./mutations";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
+import { connect } from "http2";
 
 const GET_CAMINS = gql`
   query Camins {
@@ -49,7 +53,15 @@ type Camin = {
   adress: string;
 };
 
+type NotificationType = {
+  message: string;
+  id: number;
+  title: string;
+  data: any;
+};
+
 const StepForm = () => {
+  const { currentUser } = useAuth();
   const [formStep, setFormStep] = useState(0);
   const { loading, error, data } = useQuery(GET_CAMINS);
   const [err, setErr] = useState("");
@@ -58,13 +70,45 @@ const StepForm = () => {
   const [caminError, setCaminError] = useState(false);
   const [IsOtherUniversity, setIsOtherUniversity] = useState(false);
   const [files, setFiles] = useState<FileItem[]>([]);
+  const navigate = useNavigate();
+  const [sendNotification, { data: dataNotification, error: errNotification }] =
+    useMutation(NOTIFICATION_MUTATION, {
+      onError: (err) => {
+        setErr(err.message);
+      },
+      onCompleted: () => {
+        console.log("Notification sent successfully");
+      },
+    });
   const [submitForm, { data: dataForm, error: errForm }] = useMutation(
     FORM_MUTATION,
     {
       onError: (err) => {
         setErr(err.message);
       },
-      onCompleted: () => {},
+      onCompleted: () => {
+        sendNotification({
+          variables: {
+            data: {
+              user: {
+                connect: {
+                  id: currentUser()?.id,
+                },
+              },
+              message: `${
+                currentUser()?.FirstName
+              } formularul a fost trimis spre moderator pentru aprobare.`,
+              title: `${
+                currentUser()?.FirstName
+              } formularul a fost trimis cu succes.`,
+            },
+          },
+        });
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      },
     }
   );
 
@@ -120,6 +164,10 @@ const StepForm = () => {
       setCaminError(true);
       return;
     }
+    if (formStep === 1 && !methods.getValues("lastName")) {
+      setCaminError(true);
+      return;
+    }
 
     setCaminError(false);
     setFormStep((prevActiveStep) => prevActiveStep + 1);
@@ -166,36 +214,43 @@ const StepForm = () => {
     const updatedFiles = files.filter((_, i) => i !== index);
     setFiles(updatedFiles);
   };
+  const getRenamedFile = (type: string, newBaseName: string) => {
+    const original = files.find((file) => file.fileType === type)?.file || null;
 
-  const onSubmit = (data: any) => {
+    if (!original) return null;
+
+    const ext = original.name.split(".").pop();
+    const newName = `${newBaseName}.${ext}`;
+
+    return new File([original], newName, { type: original.type });
+  };
+
+  const renamedFiles = {
+    fileBuletinBack: getRenamedFile("BuletinBack", "BuletinBack"),
+    fileBuletinFront: getRenamedFile("BuletinFront", "BuletinFront"),
+    fileStudyConfirmation: getRenamedFile(
+      "ConfirmareStudii",
+      "ConfirmareStudii"
+    ),
+  };
+
+  const onSubmit = (data: FormSchema) => {
     console.log(files.find((file) => file.fileType === "BuletinBack")?.file);
     try {
       submitForm({
         variables: {
-          data: {
-            request: {
-              aplicantName: data.lastName,
-              applicantAddress: data.address,
-              applicantCity: data.city,
-              applicantDormitoryPreference: data.dormitoryPreference,
-              applicantEmail: data.email,
-              applicantFirstName: data.firstName,
-              applicantPhone: data.phone,
-              applicantUniversity: data.university,
-              applicantState: "",
-            },
-            files: {
-              fileBuletinBack:
-                files.find((file) => file.fileType === "BuletinBack")?.file ||
-                null,
-              fileBuletinFront:
-                files.find((file) => file.fileType === "BuletinFront")?.file ||
-                null,
-              fileStudyConfirmation:
-                files.find((file) => file.fileType === "ConfirmareStudii")
-                  ?.file || null,
-            },
+          request: {
+            aplicantName: data.lastName,
+            applicantAddress: data.address,
+            applicantCity: data.city,
+            applicantDormitoryPreference: data.dormitoryPreference,
+            applicantEmail: data.email,
+            applicantFirstName: data.firstName,
+            applicantPhone: data.phone,
+            applicantUniversity: data.university,
+            applicantState: "",
           },
+          files: Object.values(renamedFiles).filter(Boolean),
         },
       });
     } catch (error) {

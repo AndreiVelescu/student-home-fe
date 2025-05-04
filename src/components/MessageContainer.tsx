@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import theme from "../theme/theme.d"; 
+import theme from "../theme/theme.d";
 
 export interface Notification {
   id: string;
@@ -19,8 +19,8 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
     <Box>
       <Stack
         sx={{
-          boxShadow: theme.shadows[2], // Folosește umbra din tema
-          borderRadius: "20px", // Folosește borderRadius din tema
+          boxShadow: theme.shadows[2],
+          borderRadius: "20px",
           padding: 2,
           backgroundColor: theme.palette.success.light,
           color: theme.palette.primary.contrastText,
@@ -31,15 +31,15 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
       </Stack>
       <Stack
         sx={{
-          boxShadow: theme.shadows[1], // Folosește umbra din tema
-          borderRadius: "20px", // Folosește borderRadius din tema
+          boxShadow: theme.shadows[1],
+          borderRadius: "20px",
           padding: 2,
           backgroundColor: theme.palette.success.light,
           color: theme.palette.primary.contrastText,
           marginBottom: "10px",
-          wordWrap: "break-word", // Permite cuvintelor să se împartă
-          whiteSpace: "normal", // Permite împărțirea textului în linii noi
-          overflow: "auto", // Permite derularea textului dacă este prea lung
+          wordWrap: "break-word",
+          whiteSpace: "normal",
+          overflow: "auto",
         }}
       >
         <Typography color="white">{message.message}</Typography>
@@ -47,8 +47,8 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
 
       <Stack
         sx={{
-          boxShadow: theme.shadows[1], // Folosește umbra din tema
-          borderRadius: "20px", // Folosește borderRadius din tema
+          boxShadow: theme.shadows[1],
+          borderRadius: "20px",
           padding: 2,
           backgroundColor: theme.palette.success.light,
           color: theme.palette.primary.contrastText,
